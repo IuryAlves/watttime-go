@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	watttime "github.com/iuryalves/watttime-go/pkg"
+	watttime "github.com/IuryAlves/watttime-go/pkg"
 	"os"
 )
 
@@ -19,4 +19,5 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Printf("Clean energy emissions for %s is %s%% \n", realTimeEmissionsIndex.Ba, realTimeEmissionsIndex.Percent)
+	os.Exit(0)
 }
