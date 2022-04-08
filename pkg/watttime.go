@@ -3,7 +3,7 @@ package pkg
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/iuryalves/watttime-go/internal"
+	"github.com/IuryAlves/watttime-go/internal"
 	"net/http"
 )
 
