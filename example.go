@@ -1,8 +1,8 @@
 package main
 
 import (
-	watttime "IuryAlves/watttime-go.git/pkg"
 	"fmt"
+	watttime "github.com/iuryalves/watttime-go/pkg"
 	"os"
 )
 

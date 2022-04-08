@@ -1,9 +1,9 @@
 package pkg
 
 import (
-	"IuryAlves/watttime-go.git/internal"
 	"encoding/json"
 	"fmt"
+	"github.com/iuryalves/watttime-go/internal"
 	"net/http"
 )
 
