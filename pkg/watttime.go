@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/IuryAlves/watttime-go/internal"
 	"net/http"
@@ -20,13 +21,15 @@ func Login(username, password string) (string, error) {
 	req.SetBasicAuth(username, password)
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
+	}
+	if 400 >= resp.StatusCode && resp.StatusCode < 599 {
+		return "", errors.New(fmt.Sprintf("Login failed: Status Code %s", resp.Status))
 	}
 	body, err := internal.ReadBody(resp)
 	var token Token
 	if err := json.Unmarshal(body, &token); err != nil {
-		fmt.Println("Cannot unmarshall JSON")
+		fmt.Println("Cannot unmarshall JSON:", err.Error())
 		return "", err
 	}
 	return token.Value, nil
@@ -47,7 +50,7 @@ func Index(token string, ba string) (RealTimeEmissionsIndex, error) {
 	body, err := internal.ReadBody(resp)
 	var rtei RealTimeEmissionsIndex
 	if err := json.Unmarshal(body, &rtei); err != nil {
-		fmt.Println("Cannot unmarshall JSON")
+		fmt.Println("Cannot unmarshall JSON: ", err.Error())
 		return RealTimeEmissionsIndex{}, err
 	}
 	return rtei, nil
