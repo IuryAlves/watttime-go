@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/IuryAlves/watttime-go/internal"
-	"github.com/stretchr/testify/assert"
+	"testing"
+
 	"io/ioutil"
 	"net/http"
-	"testing"
-)
 
+	"github.com/IuryAlves/watttime-go/internal"
+	"github.com/stretchr/testify/assert"
+)
 
 func TestLoginSuccess(t *testing.T) {
 	wattTime := &WattTime{client: &internal.MockClient{}}
@@ -18,7 +19,7 @@ func TestLoginSuccess(t *testing.T) {
 	internal.GetDoFunc = func(*http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: 200,
-			Body:       ioutil.NopCloser(bytes.NewReader([]byte(r))),
+			Body:       ioutil.NopCloser(bytes.NewReader(r)),
 		}, nil
 	}
 	token, _ := wattTime.Login("test", "test")

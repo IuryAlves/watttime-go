@@ -2,33 +2,36 @@ package pkg
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/IuryAlves/watttime-go/internal"
 	"net/http"
+
+	"github.com/IuryAlves/watttime-go/internal"
 )
 
 const (
-	BASE_ENDPOINT  = "https://api2.watttime.org"
-	LOGIN_ENDPOINT = BASE_ENDPOINT + "/login"
-	INDEX_ENDPOINT = BASE_ENDPOINT + "/index"
+	BaseEndpoint  = "https://api2.watttime.org"
+	LoginEndpoint = BaseEndpoint + "/login"
+	IndexEndpoint = LoginEndpoint + "/index"
 )
 
 type WattTime struct {
 	client internal.HTTPClient
 }
 
+func New() *WattTime {
+	return &WattTime{client: &http.Client{}}
+}
 
 func (w WattTime) Login(username, password string) (string, error) {
 	var token Token
-	req, _ := http.NewRequest("GET", LOGIN_ENDPOINT, nil)
+	req, _ := http.NewRequest("GET", LoginEndpoint, nil)
 	req.SetBasicAuth(username, password)
 	resp, err := w.client.Do(req)
 	if err != nil {
 		return "", err
 	}
 	if resp.StatusCode >= 400 && resp.StatusCode < 599 {
-		return "", errors.New(fmt.Sprintf("login failed: Status Code %d", resp.StatusCode))
+		return "", fmt.Errorf("login failed: Status Code %d", resp.StatusCode)
 	}
 	body, _ := internal.ReadBody(resp)
 
@@ -40,7 +43,7 @@ func (w WattTime) Login(username, password string) (string, error) {
 }
 
 func (w WattTime) Index(token string, ba string) (RealTimeEmissionsIndex, error) {
-	req, _ := http.NewRequest("GET", INDEX_ENDPOINT, nil)
+	req, _ := http.NewRequest("GET", IndexEndpoint, nil)
 	q := req.URL.Query()
 	q.Add("ba", ba)
 	req.URL.RawQuery = q.Encode()
@@ -51,7 +54,7 @@ func (w WattTime) Index(token string, ba string) (RealTimeEmissionsIndex, error)
 		return RealTimeEmissionsIndex{}, err
 	}
 
-	body, err := internal.ReadBody(resp)
+	body, _ := internal.ReadBody(resp)
 	var rtei RealTimeEmissionsIndex
 	if err := json.Unmarshal(body, &rtei); err != nil {
 		fmt.Println("cannot unmarshall JSON: ", err.Error())
