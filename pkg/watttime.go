@@ -14,20 +14,24 @@ const (
 	INDEX_ENDPOINT = BASE_ENDPOINT + "/index"
 )
 
-var client = &http.Client{}
+type WattTime struct {
+	client internal.HTTPClient
+}
 
-func Login(username, password string) (string, error) {
+
+func (w WattTime) Login(username, password string) (string, error) {
+	var token Token
 	req, _ := http.NewRequest("GET", LOGIN_ENDPOINT, nil)
 	req.SetBasicAuth(username, password)
-	resp, err := client.Do(req)
+	resp, err := w.client.Do(req)
 	if err != nil {
 		return "", err
 	}
-	if 400 >= resp.StatusCode && resp.StatusCode < 599 {
-		return "", errors.New(fmt.Sprintf("Login failed: Status Code %s", resp.Status))
+	if resp.StatusCode >= 400 && resp.StatusCode < 599 {
+		return "", errors.New(fmt.Sprintf("login failed: Status Code %d", resp.StatusCode))
 	}
-	body, err := internal.ReadBody(resp)
-	var token Token
+	body, _ := internal.ReadBody(resp)
+
 	if err := json.Unmarshal(body, &token); err != nil {
 		fmt.Println("Cannot unmarshall JSON:", err.Error())
 		return "", err
@@ -35,13 +39,13 @@ func Login(username, password string) (string, error) {
 	return token.Value, nil
 }
 
-func Index(token string, ba string) (RealTimeEmissionsIndex, error) {
+func (w WattTime) Index(token string, ba string) (RealTimeEmissionsIndex, error) {
 	req, _ := http.NewRequest("GET", INDEX_ENDPOINT, nil)
 	q := req.URL.Query()
 	q.Add("ba", ba)
 	req.URL.RawQuery = q.Encode()
 	req.Header.Set("Authorization", "Bearer "+token)
-	resp, err := client.Do(req)
+	resp, err := w.client.Do(req)
 	if err != nil {
 		fmt.Println(err)
 		return RealTimeEmissionsIndex{}, err
@@ -50,7 +54,7 @@ func Index(token string, ba string) (RealTimeEmissionsIndex, error) {
 	body, err := internal.ReadBody(resp)
 	var rtei RealTimeEmissionsIndex
 	if err := json.Unmarshal(body, &rtei); err != nil {
-		fmt.Println("Cannot unmarshall JSON: ", err.Error())
+		fmt.Println("cannot unmarshall JSON: ", err.Error())
 		return RealTimeEmissionsIndex{}, err
 	}
 	return rtei, nil
