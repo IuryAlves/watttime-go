@@ -5,6 +5,9 @@ GO_LINT?=$(shell which golangci-lint)
 test:
 	$(GOCMD) test ./... -mod=vendor -count=1
 
+.PHONY: fmt
+fmt:
+	$(GOCMD) fmt ./...
 
 .PHONY: lint
 lint: vendor
@@ -13,6 +16,3 @@ lint: vendor
 .PHONY: vendor
 vendor:
 	$(GOCMD) mod vendor
-
-build:
-	$(GOCMD) build -o deploy-tool github.com/voiapp/deploy-tool/cmd/deploytool
