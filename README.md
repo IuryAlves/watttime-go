@@ -27,15 +27,17 @@ import "github.com/IuryAlves/watttime-go/pkg"
   - [func New() *WattTime](<#func-new>)
   - [func (w WattTime) Index(token string, options IndexOptions) (RealTimeEmissionsIndex, error)](<#func-watttime-index>)
   - [func (w WattTime) Login(username, password string) (string, error)](<#func-watttime-login>)
+  - [func (w WattTime) Register(username, password, email, org string) (bool, error)](<#func-watttime-register>)
 
 
 ## Constants
 
 ```go
 const (
-    BaseEndpoint  = "https://api2.watttime.org"
-    LoginEndpoint = BaseEndpoint + "/login"
-    IndexEndpoint = LoginEndpoint + "/index"
+    BaseEndpoint     = "https://api2.watttime.org"
+    LoginEndpoint    = BaseEndpoint + "/login"
+    IndexEndpoint    = BaseEndpoint + "/index"
+    RegisterEndpoint = BaseEndpoint + "/register"
 )
 ```
 
@@ -81,7 +83,7 @@ type Token struct {
 }
 ```
 
-## type [WattTime](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L16-L18>)
+## type [WattTime](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L21-L23>)
 
 ```go
 type WattTime struct {
@@ -89,7 +91,7 @@ type WattTime struct {
 }
 ```
 
-### func [New](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L21>)
+### func [New](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L26>)
 
 ```go
 func New() *WattTime
@@ -97,7 +99,7 @@ func New() *WattTime
 
 New Instantiates a WattTime Client
 
-### func \(WattTime\) [Index](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L50>)
+### func \(WattTime\) [Index](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L91>)
 
 ```go
 func (w WattTime) Index(token string, options IndexOptions) (RealTimeEmissionsIndex, error)
@@ -159,7 +161,7 @@ Index Provides a real\-time signal indicating the marginal carbon intensity for 
 </p>
 </details>
 
-### func \(WattTime\) [Login](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L28>)
+### func \(WattTime\) [Login](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L33>)
 
 ```go
 func (w WattTime) Login(username, password string) (string, error)
@@ -180,6 +182,42 @@ Login returns a token of type string\. Use the token for further requests toward
 		fmt.Println(err.Error())
 	}
 	fmt.Println(token)
+}
+```
+
+</p>
+</details>
+
+### func \(WattTime\) [Register](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L56>)
+
+```go
+func (w WattTime) Register(username, password, email, org string) (bool, error)
+```
+
+#### Register creates a new user for the WattTime API
+
+Returns \(true\, nil\) if the registration was successful and \(false\, err\) otherwise
+
+<details><summary>Example</summary>
+<p>
+
+```go
+{
+	wattTime := New()
+	ok, err := wattTime.Register(
+		"john",
+		"snow",
+		"john@snow.com",
+		"nightwatchers",
+	)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	if ok {
+		fmt.Println("User registered")
+	}
 }
 ```
 

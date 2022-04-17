@@ -39,10 +39,58 @@ func TestLoginFailed(t *testing.T) {
 	assert.EqualError(t, err, errors.New("login failed: Status Code 401").Error())
 }
 
+
+func TestRegisterSuccess(t *testing.T) {
+	client := &internal.MockClient{}
+	wattTime := &WattTime{Client: client}
+	internal.GetDoFunc = func(req *http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: 200,
+		}, nil
+	}
+
+	ok, err := wattTime.Register(
+		"john-snow",
+		"knows-nothing",
+		"john@snow.com",
+		"nightwatchers",
+		)
+
+	assert.True(t, ok)
+	assert.Nil(t, err)
+}
+
+func TestRegisterFailed(t *testing.T) {
+	client := &internal.MockClient{}
+	wattTime := &WattTime{Client: client}
+	internal.GetDoFunc = func(req *http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: 403,
+		}, nil
+	}
+
+	ok, err := wattTime.Register(
+		"john-snow",
+		"knows-nothing",
+		"john@snow.com",
+		"nightwatchers",
+	)
+
+	assert.False(t, ok)
+	assert.Error(t, err)
+}
+
 func TestIndexBaSuccess(t *testing.T) {
 	client := &internal.MockClient{}
 	wattTime := &WattTime{Client: client}
-	r, _ := json.Marshal(RealTimeEmissionsIndex{Ba: "SE", Freq: "10", Percent: "10", Moer: "10", PointTime: "10"})
+	r, _ := json.Marshal(
+		RealTimeEmissionsIndex{
+			Ba: "SE",
+			Freq: "10",
+			Percent: "10",
+			Moer: "10",
+			PointTime: "10",
+		})
 	internal.GetDoFunc = func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: 200,

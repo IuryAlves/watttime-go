@@ -3,7 +3,7 @@ GO_LINT?=$(shell which golangci-lint)
 
 .PHONY: test
 test:
-	$(GOCMD) test ./... -mod=vendor -count=1
+	$(GOCMD) test ./pkg -mod=vendor -count=1 -v
 
 .PHONY: fmt
 fmt:

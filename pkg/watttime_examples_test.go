@@ -42,3 +42,21 @@ func ExampleWattTime_Index_withStyle() {
 	}
 	fmt.Println("Marginal Operating Emissions Rate (MOER)", realTimeEmissionsIndex.Percent)
 }
+
+func ExampleWattTime_Register() {
+	wattTime := New()
+	ok, err := wattTime.Register(
+		"john",
+		"snow",
+		"john@snow.com",
+		"nightwatchers",
+		)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	if ok {
+		fmt.Println("User registered")
+	}
+}
