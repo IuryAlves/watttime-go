@@ -15,18 +15,22 @@ const (
 )
 
 type WattTime struct {
-	client internal.HTTPClient
+	Client internal.HTTPClient
 }
 
+// New Instantiates a WattTime Client
 func New() *WattTime {
-	return &WattTime{client: &http.Client{}}
+	return &WattTime{Client: &http.Client{}}
 }
 
+// Login Authenticates towards the WattTime API
+//
+// Login returns a token of type string. Use the token for further requests towards the API
 func (w WattTime) Login(username, password string) (string, error) {
 	var token Token
 	req, _ := http.NewRequest("GET", LoginEndpoint, nil)
 	req.SetBasicAuth(username, password)
-	resp, err := w.client.Do(req)
+	resp, err := w.Client.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -42,13 +46,14 @@ func (w WattTime) Login(username, password string) (string, error) {
 	return token.Value, nil
 }
 
+// Index Provides a real-time signal indicating the marginal carbon intensity for the local grid for the current time (updated every 5 minutes).
 func (w WattTime) Index(token string, ba string) (RealTimeEmissionsIndex, error) {
 	req, _ := http.NewRequest("GET", IndexEndpoint, nil)
 	q := req.URL.Query()
 	q.Add("ba", ba)
 	req.URL.RawQuery = q.Encode()
 	req.Header.Set("Authorization", "Bearer "+token)
-	resp, err := w.client.Do(req)
+	resp, err := w.Client.Do(req)
 	if err != nil {
 		fmt.Println(err)
 		return RealTimeEmissionsIndex{}, err

@@ -16,3 +16,7 @@ lint: vendor
 .PHONY: vendor
 vendor:
 	$(GOCMD) mod vendor
+
+.PHONY: docs
+docs:
+	gomarkdoc -e -o README.md ./pkg

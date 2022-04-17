@@ -14,7 +14,7 @@ import (
 )
 
 func TestLoginSuccess(t *testing.T) {
-	wattTime := &WattTime{client: &internal.MockClient{}}
+	wattTime := &WattTime{Client: &internal.MockClient{}}
 	r, _ := json.Marshal(Token{Value: "token"})
 	internal.GetDoFunc = func(*http.Request) (*http.Response, error) {
 		return &http.Response{
@@ -28,7 +28,7 @@ func TestLoginSuccess(t *testing.T) {
 }
 
 func TestLoginFailed(t *testing.T) {
-	wattTime := &WattTime{client: &internal.MockClient{}}
+	wattTime := &WattTime{Client: &internal.MockClient{}}
 	internal.GetDoFunc = func(*http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: 401,
