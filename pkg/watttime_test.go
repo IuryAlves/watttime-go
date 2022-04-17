@@ -47,7 +47,7 @@ func TestIndexBaSuccess(t *testing.T) {
 		return &http.Response{
 			StatusCode: 200,
 			Body:       ioutil.NopCloser(bytes.NewReader(r)),
-			Request:	req,
+			Request:    req,
 		}, nil
 	}
 	options := &IndexOptions{Ba: "SE"}
@@ -62,17 +62,17 @@ func TestIndexLongitudeLatitudeSuccess(t *testing.T) {
 	wattTime := &WattTime{Client: client}
 	r, _ := json.Marshal(
 		RealTimeEmissionsIndex{
-			Ba: "CAISO_NORTH",
-			Freq: "300",
-			Percent: "53",
-			Moer: "850.743982",
+			Ba:        "CAISO_NORTH",
+			Freq:      "300",
+			Percent:   "53",
+			Moer:      "850.743982",
 			PointTime: "2019-01-29T14:55:00.00Z"},
-		)
+	)
 	internal.GetDoFunc = func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: 200,
 			Body:       ioutil.NopCloser(bytes.NewReader(r)),
-			Request:	req,
+			Request:    req,
 		}, nil
 	}
 	options := &IndexOptions{Latitude: 42.372, Longitude: -72.519}

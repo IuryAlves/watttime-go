@@ -3,7 +3,7 @@ package internal
 import "net/http"
 
 type MockClient struct {
-	DoFunc func(req *http.Request) (*http.Response, error)
+	DoFunc  func(req *http.Request) (*http.Response, error)
 	Request *http.Request
 }
 

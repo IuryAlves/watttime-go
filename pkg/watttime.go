@@ -1,10 +1,12 @@
 package pkg
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/IuryAlves/watttime-go/internal"
+
+	"encoding/json"
 	"net/http"
+
+	"github.com/IuryAlves/watttime-go/internal"
 )
 
 const (

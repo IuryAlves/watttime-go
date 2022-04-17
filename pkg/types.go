@@ -7,15 +7,15 @@ type Token struct {
 
 type RealTimeEmissionsIndex struct {
 	// Duration in seconds for which the data is valid from point_time
-	Freq      string
+	Freq string
 	//	Balancing authority abbreviation
-	Ba        string
+	Ba string
 	// A percentile value between 0 (minimum MOER in the last month i.e. clean) and 100
 	// (maximum MOER in the last month i.e. dirty) representing the relative realtime
 	// marginal emissions intensity.
-	Percent   string
+	Percent string
 	// Marginal Operating Emissions Rate (MOER) value measured in lbs/MWh
-	Moer      string
+	Moer string
 	// ISO8601 UTC date/time format indicating when this data became valid
 	PointTime string `json:"point_time"`
 }
@@ -23,9 +23,9 @@ type RealTimeEmissionsIndex struct {
 type IndexOptions struct {
 	// Options for the Index function.
 	// Provided either Ba or Latitude and Longitude, but not all three.
-	Ba 		  string
+	Ba        string
 	Latitude  float64
 	Longitude float64
 	// Units in which to provide realtime marginal emissions.
-	Style     string
+	Style string
 }
