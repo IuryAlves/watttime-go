@@ -71,6 +71,8 @@ func (w WattTime) Index(token string, options IndexOptions) (RealTimeEmissionsIn
 	return rtei, nil
 }
 
+// validateIndexOptions checks that 'latitude' and 'longitude' are not provided
+// in case 'ba' is provided
 func validateIndexOptions(options IndexOptions) error {
 	if len(options.Ba) > 0 && (options.Latitude != 0 || options.Longitude != 0) {
 		return fmt.Errorf("provide ba OR provide latitude+longitude, not all three")

@@ -20,11 +20,12 @@ import "github.com/IuryAlves/watttime-go/pkg"
 ## Index
 
 - [Constants](<#constants>)
+- [type IndexOptions](<#type-indexoptions>)
 - [type RealTimeEmissionsIndex](<#type-realtimeemissionsindex>)
 - [type Token](<#type-token>)
 - [type WattTime](<#type-watttime>)
   - [func New() *WattTime](<#func-new>)
-  - [func (w WattTime) Index(token string, ba string) (RealTimeEmissionsIndex, error)](<#func-watttime-index>)
+  - [func (w WattTime) Index(token string, options IndexOptions) (RealTimeEmissionsIndex, error)](<#func-watttime-index>)
   - [func (w WattTime) Login(username, password string) (string, error)](<#func-watttime-login>)
 
 
@@ -38,27 +39,49 @@ const (
 )
 ```
 
-## type [RealTimeEmissionsIndex](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/types.go#L7-L13>)
+## type [IndexOptions](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/types.go#L23-L31>)
+
+```go
+type IndexOptions struct {
+    // Options for the Index function.
+    // Provided either Ba or Latitude and Longitude, but not all three.
+    Ba        string
+    Latitude  float64
+    Longitude float64
+    // Units in which to provide realtime marginal emissions.
+    Style string
+}
+```
+
+## type [RealTimeEmissionsIndex](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/types.go#L8-L21>)
 
 ```go
 type RealTimeEmissionsIndex struct {
-    Freq      string
-    Ba        string
-    Percent   string
-    Moer      string
+    // Duration in seconds for which the data is valid from point_time
+    Freq string
+    //	Balancing authority abbreviation
+    Ba  string
+    // A percentile value between 0 (minimum MOER in the last month i.e. clean) and 100
+    // (maximum MOER in the last month i.e. dirty) representing the relative realtime
+    // marginal emissions intensity.
+    Percent string
+    // Marginal Operating Emissions Rate (MOER) value measured in lbs/MWh
+    Moer string
+    // ISO8601 UTC date/time format indicating when this data became valid
     PointTime string `json:"point_time"`
 }
 ```
 
-## type [Token](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/types.go#L3-L5>)
+## type [Token](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/types.go#L3-L6>)
 
 ```go
 type Token struct {
+    // A token for authentication towards the WattTime API
     Value string `json:"token"`
 }
 ```
 
-## type [WattTime](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L17-L19>)
+## type [WattTime](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L16-L18>)
 
 ```go
 type WattTime struct {
@@ -66,7 +89,7 @@ type WattTime struct {
 }
 ```
 
-### func [New](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L22>)
+### func [New](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L21>)
 
 ```go
 func New() *WattTime
@@ -77,12 +100,66 @@ New Instantiates a WattTime Client
 ### func \(WattTime\) [Index](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L50>)
 
 ```go
-func (w WattTime) Index(token string, ba string) (RealTimeEmissionsIndex, error)
+func (w WattTime) Index(token string, options IndexOptions) (RealTimeEmissionsIndex, error)
 ```
 
 Index Provides a real\-time signal indicating the marginal carbon intensity for the local grid for the current time \(updated every 5 minutes\)\.
 
-### func \(WattTime\) [Login](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L29>)
+<details><summary>Example (With Ba)</summary>
+<p>
+
+```go
+{
+	wattTime := New()
+	options := IndexOptions{Ba: "SE"}
+	realTimeEmissionsIndex, err := wattTime.Index("123abc", options)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println("Marginal Operating Emissions Rate (MOER)", realTimeEmissionsIndex.Moer)
+}
+```
+
+</p>
+</details>
+
+<details><summary>Example (With Latitude Longitude)</summary>
+<p>
+
+```go
+{
+	wattTime := New()
+	options := IndexOptions{Latitude: 42.372, Longitude: -72.519}
+	realTimeEmissionsIndex, err := wattTime.Index("123abc", options)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println("Marginal Operating Emissions Rate (MOER)", realTimeEmissionsIndex.Moer)
+}
+```
+
+</p>
+</details>
+
+<details><summary>Example (With Style)</summary>
+<p>
+
+```go
+{
+	wattTime := New()
+	options := IndexOptions{Ba: "SE", Style: "Percent"}
+	realTimeEmissionsIndex, err := wattTime.Index("123abc", options)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println("Marginal Operating Emissions Rate (MOER)", realTimeEmissionsIndex.Percent)
+}
+```
+
+</p>
+</details>
+
+### func \(WattTime\) [Login](<https://github.com/IuryAlves/watttime-go/blob/main/pkg/watttime.go#L28>)
 
 ```go
 func (w WattTime) Login(username, password string) (string, error)
@@ -102,14 +179,8 @@ Login returns a token of type string\. Use the token for further requests toward
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-
+	fmt.Println(token)
 }
-```
-
-#### Output
-
-```
-token
 ```
 
 </p>
