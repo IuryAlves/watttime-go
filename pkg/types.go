@@ -11,3 +11,10 @@ type RealTimeEmissionsIndex struct {
 	Moer      string
 	PointTime string `json:"point_time"`
 }
+
+type IndexOptions struct {
+	Ba 		  string
+	Latitude  float64
+	Longitude float64
+	Style     string
+}

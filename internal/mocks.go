@@ -2,9 +2,9 @@ package internal
 
 import "net/http"
 
-// MockClient is the mock client
 type MockClient struct {
 	DoFunc func(req *http.Request) (*http.Response, error)
+	Request *http.Request
 }
 
 var (
@@ -14,5 +14,6 @@ var (
 
 // Do is the mock client's `Do` func
 func (m *MockClient) Do(req *http.Request) (*http.Response, error) {
+	m.Request = req
 	return GetDoFunc(req)
 }

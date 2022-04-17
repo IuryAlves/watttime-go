@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"fmt"
-	"testing"
 )
 
 func ExampleWattTime_Login(){
@@ -11,4 +10,5 @@ func ExampleWattTime_Login(){
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+	fmt.Println(token)
 }

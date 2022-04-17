@@ -3,9 +3,8 @@ package pkg
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-
 	"github.com/IuryAlves/watttime-go/internal"
+	"net/http"
 )
 
 const (
@@ -46,11 +45,15 @@ func (w WattTime) Login(username, password string) (string, error) {
 	return token.Value, nil
 }
 
-// Index Provides a real-time signal indicating the marginal carbon intensity for the local grid for the current time (updated every 5 minutes).
-func (w WattTime) Index(token string, ba string) (RealTimeEmissionsIndex, error) {
+// Index Provides a real-time signal indicating the marginal carbon intensity for
+// the local grid for the current time (updated every 5 minutes).
+func (w WattTime) Index(token string, options IndexOptions) (RealTimeEmissionsIndex, error) {
+	err := validateIndexOptions(options)
+	if err != nil {
+		return RealTimeEmissionsIndex{}, err
+	}
 	req, _ := http.NewRequest("GET", IndexEndpoint, nil)
-	q := req.URL.Query()
-	q.Add("ba", ba)
+	q := internal.QueryFromOptions(options)
 	req.URL.RawQuery = q.Encode()
 	req.Header.Set("Authorization", "Bearer "+token)
 	resp, err := w.Client.Do(req)
@@ -66,4 +69,11 @@ func (w WattTime) Index(token string, ba string) (RealTimeEmissionsIndex, error)
 		return RealTimeEmissionsIndex{}, err
 	}
 	return rtei, nil
+}
+
+func validateIndexOptions(options IndexOptions) error {
+	if len(options.Ba) > 0 && (options.Latitude != 0 || options.Longitude != 0) {
+		return fmt.Errorf("provide ba OR provide latitude+longitude, not all three")
+	}
+	return nil
 }
