@@ -50,7 +50,7 @@ func ExampleWattTime_Register() {
 		"snow",
 		"john@snow.com",
 		"nightwatchers",
-		)
+	)
 
 	if err != nil {
 		fmt.Println(err.Error())

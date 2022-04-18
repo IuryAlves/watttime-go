@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"net/url"
+	"strings"
 
 	"encoding/json"
 	"net/http"
@@ -53,7 +55,7 @@ func (w WattTime) Login(username, password string) (string, error) {
 // Register creates a new user for the WattTime API
 //
 // Returns (true, nil) if the registration was successful and (false, err) otherwise
-func (w WattTime) Register(username, password, email, org string) (bool, error){
+func (w WattTime) Register(username, password, email, org string) (bool, error) {
 	type registerPayload struct {
 		Username string
 		Password string
@@ -64,8 +66,8 @@ func (w WattTime) Register(username, password, email, org string) (bool, error){
 	payload, err := json.Marshal(&registerPayload{
 		Username: username,
 		Password: password,
-		Email: email,
-		Org: org,
+		Email:    email,
+		Org:      org,
 	})
 
 	if err != nil {
@@ -74,8 +76,7 @@ func (w WattTime) Register(username, password, email, org string) (bool, error){
 	req, _ := http.NewRequest(
 		"POST",
 		RegisterEndpoint,
-		ioutil.NopCloser(bytes.NewReader(payload),
-		))
+		ioutil.NopCloser(bytes.NewReader(payload)))
 	resp, err := w.Client.Do(req)
 	if err != nil {
 		return false, err
@@ -89,12 +90,9 @@ func (w WattTime) Register(username, password, email, org string) (bool, error){
 // Index Provides a real-time signal indicating the marginal carbon intensity for
 // the local grid for the current time (updated every 5 minutes).
 func (w WattTime) Index(token string, options IndexOptions) (RealTimeEmissionsIndex, error) {
-	err := validateIndexOptions(options)
-	if err != nil {
-		return RealTimeEmissionsIndex{}, err
-	}
 	req, _ := http.NewRequest("GET", IndexEndpoint, nil)
 	q := internal.QueryFromOptions(options)
+	q = validateIndexQuery(q)
 	req.URL.RawQuery = q.Encode()
 	req.Header.Set("Authorization", "Bearer "+token)
 	resp, err := w.Client.Do(req)
@@ -114,9 +112,13 @@ func (w WattTime) Index(token string, options IndexOptions) (RealTimeEmissionsIn
 
 // validateIndexOptions checks that 'latitude' and 'longitude' are not provided
 // in case 'ba' is provided
-func validateIndexOptions(options IndexOptions) error {
-	if len(options.Ba) > 0 && (options.Latitude != 0 || options.Longitude != 0) {
-		return fmt.Errorf("provide ba OR provide latitude+longitude, not all three")
+func validateIndexQuery(query url.Values) url.Values {
+	if len(strings.Join(query["ba"], "")) == 0 {
+		query.Del("ba")
 	}
-	return nil
+	if query.Has("ba") {
+		query.Del("latitude")
+		query.Del("longitude")
+	}
+	return query
 }
